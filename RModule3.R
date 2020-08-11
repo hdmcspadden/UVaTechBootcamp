@@ -45,7 +45,7 @@ print(rSeq)
 # create a "random" vector
 rVector <- c(1,23,45,62,3,57,98,2,43)
 
-
+install.packages()
 # make a histogram
 hist(rSeq)
 hist(rVector)
