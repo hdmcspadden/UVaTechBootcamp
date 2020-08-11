@@ -1,0 +1,66 @@
+---
+title: "RUserInput"
+author: "Diana McSpadden"
+date: "8/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r import packages}
+library(stringr)
+
+```
+
+
+```{r getinput}
+result <- readline(prompt = "What is the result of 1+1?")
+```
+
+```{r print input from user}
+print(result)
+```
+```{r validatewordfunction}
+# create a word validation function
+validateEnteredWord <- function(enteredWord) {
+  isWord <- FALSE
+  if (str_detect(enteredWord, regex("^[a-zA-Z]*$", FALSE))){
+    isWord <- TRUE
+  }
+    
+  return(isWord)
+}
+```
+
+
+```{r testvalidateworkfunction}
+print(validateEnteredWord("Diana"))
+print(validateEnteredWord("Diana is cool"))
+print(validateEnteredWord("Diana567"))
+```
+
+
+```{r promptuntilentry}
+result <- (readline(prompt = "Enter a word: "))
+while(validateEnteredWord(result) != TRUE){
+    result <- readline(prompt = "Wrong answer. Enter a word: ")
+}
+```
+
+
+```{r userenteredlist}
+myList <- c()
+userInput = ""
+while (userInput != "Q"){
+  userInput <- readline(prompt = "Enter Q to quit or enter any text to add to the list: ")
+  if (userInput != "Q")
+  {
+    myList <- c(myList, userInput)
+  }
+}
+
+print(myList)
+
+```
