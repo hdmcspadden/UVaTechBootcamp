@@ -1,0 +1,33 @@
+---
+title: "StopWatch"
+author: "Diana McSpadden"
+date: "8/11/2020"
+output: html_document
+language: R
+CRAN: http://cran.rstudio.com
+---
+
+
+```{r installtictoc}
+# install.packages("tictoc")
+library(tictoc)
+```
+
+
+```{r starttimer}
+tic()
+```
+
+
+```{r stufftotime}
+a <- matrix(c(0:3), nrow = 2)
+print(a)
+b <- matrix(c(5:8), ncol = 2)
+print(b)
+kronecker(a, b)
+```
+
+```{r endtimer}
+toc()
+```
+
