@@ -6,9 +6,9 @@ Created on Thu Aug 13 08:27:03 2020
 """
 
 """
-Question I want to anwer: 
+Question I want to answer: 
     of first gifts that were GIVING CARD gifts in the years 2016, 2017, and 2018 
-    which year had the highest liklihood of additional giving by the Constituent?
+    how do additional gifts from people who initially gave via giving card compare?
     
 Background:
     A Constituent is a person, organization, fund, foundation, etc that has a relationship with the museum/non-profit.
