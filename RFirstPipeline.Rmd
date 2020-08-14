@@ -1,0 +1,38 @@
+---
+title: "FirstPipeline"
+author: "Diana McSpadden"
+date: "8/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is the example in TechBootcamp
+
+```{r examplepipeline}
+# load tidyverse package
+library(tidyverse)
+
+# Part 1: Read data into data frame
+df <- read_csv("andre.csv", col_names = TRUE)
+
+# Part 2: remove data from 1976 and after 1993
+df <- filter(df, Year != 1976)
+df <- filter(df, Year <  1994)
+
+# Part 3: make a histogram
+ggplot(data=df, aes(df$H)) + 
+  geom_histogram()
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

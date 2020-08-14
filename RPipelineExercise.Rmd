@@ -1,0 +1,173 @@
+---
+title: "Pipeline Exercise"
+author: "Diana McSpadden"
+date: "8/13/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question I want to answer: 
+    of first gifts that were GIVING CARD gifts in the years 2016, 2017, and 2018 
+    how do additional gifts from people who initially gave via giving card compare?
+    
+## Background:
+
+**A Constituent** is a person, organization, fund, foundation, etc that has a relationship with the museum/non-profit.
+        A Constituent may have already giving a gift, or they may be a prospective donor.
+    
+**A Giving Card** is a piece of paper with donation instructions, including an envelope to mail a donation
+        at a later date. Giving Cards are provided on site, typically at points of interest at the museum, 
+        by tour guides, or by key historic site staff. Donors who give a gift by GIVING CARD are typically 
+        very interested guests who enjoyed their experience at the historic site.
+        
+**Why ask this question?**
+        Giving Card practices may have changed between the year, or guests may be different between the years.
+        Are giving cards still an effective means to find new donors?
+        
+    This question will not answer WHY there are differences between the years of repeat giving by first-time
+        Giving Card donors, but since this question has never been asked before it can provide a baseline
+        and if we know that Giving Card procedures have changed it may tell us whether they became more or 
+        less effective.
+        
+**Data:**
+        The data set was extracted to contain constituents that gave a FIRST GIFT via giving card. 
+        The data set contains:
+            Constituent ID (unique ID for the constituent)
+                ** To anonymize: I removed Constituent Name and Org Name
+            Org or Person Indicator: because I removed the Person Name, and Org Name columns I added a P, or O
+                to tell me if the Constituent is a person or organization
+            First Gift Date: date of first gift to historic site
+            First Gift Amount: amount of first gift
+            2016 Total Giving: total amount GIFT CARD giving in 2016
+            2017 Total Giving: total amount GIFT CARD giving in 2016
+            2018 Total Giving: total amount GIFT CARD giving in 2016
+            2019 Total Giving: total amount GIFT CARD giving in 2016
+            2020 Total Giving: total amount GIFT CARD giving in 2016
+            Total Giving All Years: Res and Unres: Total giving (restricted and unrestricted)
+                from the Constituent in all years of giving
+            
+**We only have Giving Card data for 2016 - 2020**
+            I can really only compare repeat giving in years 2017, 2018, and 2019
+            This is not enough information for a real analysis, but it is a start
+
+```{r loadlibraries}
+# load packages
+library(tidyverse)
+library(ggplot2)
+library(stringi)
+```
+
+```{r readcsv}
+# Part 1: Read data into data frame
+df <- read_csv("Lifetime_Giving_First_Gift_Giving_Card_Anon.csv", col_names = TRUE)
+```
+## Rename columns
+in R, the columns that start with numbers will cause problems with coding. I will rename those columns
+
+```{r renamecolumns}
+names(df)[names(df)=="2016GCGiving"] <- "GCGiving2016"
+
+names(df)[names(df)=="2017GCGiving"] <- "GCGiving2017"
+
+names(df)[names(df)=="2018GCGiving"] <- "GCGiving2018"
+
+names(df)[names(df)=="2019GCGiving"] <- "GCGiving2019"
+
+names(df)[names(df)=="2020GCGiving"] <- "GCGiving2020"
+
+# print the new names
+names(df)
+```
+
+Do a basic summarise of the dataframe, but beware these means include all the people who didn't donate in each year, i.e. there are a bunch of $0 donations included in mean.
+
+```{r}
+# do a basic analysis of the data 
+df %>%
+  summarise(meanTotalGiving = mean(TotalGivingResUnres ), iqrTotal = IQR(TotalGivingResUnres), 
+  mean2016 = mean(GCGiving2016),
+  mean2017 = mean(GCGiving2017),  
+  mean2018 = mean(GCGiving2018),   
+  mean2019 = mean(GCGiving2019), 
+  mean2020 = mean(GCGiving2020), 
+  n = n())
+```
+
+Get the year by year means that filter out the zero donations.
+## 2016 Donations
+
+```{r}
+df %>%
+  filter(GCGiving2016 > 0) %>%
+  summarise(mean2016 = mean(GCGiving2016),
+  n = n())
+
+df %>%
+  filter(GCGiving2017 > 0) %>%
+  summarise(mean2017 = mean(GCGiving2017),
+  n = n())
+
+df %>%
+  filter(GCGiving2018 > 0) %>%
+  summarise(mean2018 = mean(GCGiving2018),
+  n = n())
+
+df %>%
+  filter(GCGiving2019 > 0) %>%
+  summarise(mean2019 = mean(GCGiving2019),
+  n = n())
+
+df %>%
+  filter(GCGiving2020 > 0) %>%
+  summarise(mean2020 = mean(GCGiving2020),
+  n = n())
+```
+## Add the first gift year column 
+
+Add the FirstGiftYear column to the data frame so I can create the 
+
+```{r}
+df <- mutate(df, FirstGiftYear = stri_sub(FirstGiftDate,-4,-1))
+```
+
+## # create column AdditionalDonations
+Create a new column AdditionalDonations for TotalGiving > FirstGiving column called AdditionalDonations
+```{r}
+df <- mutate(df, AdditionalDonations = (TotalGivingResUnres - FirstGiftAmount))
+```
+
+## Create our histograms
+Create a histograms from First Gift Year and More Donations
+
+```{r}
+df %>%
+  group_by(FirstGiftYear) %>%
+  filter(AdditionalDonations > 0) %>%
+  summarise(countAdditionalGiving = n())
+```
+```{r}
+ggplot(data = df, aes(x = FirstGiftYear)) +
+  geom_histogram(stat = "count") + 
+  ggtitle("Number of Gifts per First Gift Year")
+```
+## Average Amount of Additional Giving By First Year Gift
+
+```{r}
+df %>%
+  group_by(FirstGiftYear) %>%
+  filter(AdditionalDonations > 0) %>%
+  summarise(averageAdditionalGiving = mean(AdditionalDonations))
+```
+```{r}
+# Remove $0 Additional Donations
+dfNoZeroAdditionalDonations <- df %>%
+  filter(AdditionalDonations > 0)
+
+ggplot(data = dfNoZeroAdditionalDonations, aes(x = FirstGiftYear, y = AdditionalDonations)) +
+  stat_summary(fun.y = "mean", geom = "bar") +
+  ggtitle("Average Additional Giving By First Year of Giving")
+```
+
